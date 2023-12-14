@@ -1,0 +1,190 @@
+Script started on Thu Dec 14 17:55:04 2023
+[root@nfss ~]# yum install nfs-utils
+Failed to set locale, defaulting to C
+Loaded plugins: fastestmirror
+Loading mirror speeds from cached hostfile
+ * base: mirror.hostnet.nl
+ * extras: mirror.hostnet.nl
+ * updates: mirror.hostnet.nl
+Resolving Dependencies
+--> Running transaction check
+---> Package nfs-utils.x86_64 1:1.3.0-0.66.el7 will be updated
+---> Package nfs-utils.x86_64 1:1.3.0-0.68.el7.2 will be an update
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+==========================================================================================
+ Package            Arch            Version                        Repository        Size
+==========================================================================================
+Updating:
+ nfs-utils          x86_64          1:1.3.0-0.68.el7.2             updates          413 k
+
+Transaction Summary
+==========================================================================================
+Upgrade  1 Package
+
+Total download size: 413 k
+Is this ok [y/d/N]: y
+Downloading packages:
+No Presto metadata available for updates
+nfs-utils-1.3.0-0.68.el7.2.x86_64.rpm                              | 413 kB  00:00:01     
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+  Updating   : 1:nfs-utils-1.3.0-0.68.el7.2.x86_64                                    1/2 
+  Cleanup    : 1:nfs-utils-1.3.0-0.66.el7.x86_64                                      2/2 
+  Verifying  : 1:nfs-utils-1.3.0-0.68.el7.2.x86_64                                    1/2 
+  Verifying  : 1:nfs-utils-1.3.0-0.66.el7.x86_64                                      2/2 
+
+Updated:
+  nfs-utils.x86_64 1:1.3.0-0.68.el7.2                                                     
+
+Complete!
+[root@nfss ~]# systemctl enable firewalld --now
+Created symlink from /etc/systemd/system/dbus-org.fedoraproject.FirewallD1.service to /usr/lib/systemd/system/firewalld.service.
+Created symlink from /etc/systemd/system/multi-user.target.wants/firewalld.service to /usr/lib/systemd/system/firewalld.service.
+[root@nfss ~]# firewall-cmd --permanent --add-service="nfs3"
+success
+[root@nfss ~]# firewall-cmd --permanent --add-service="rpc-bind"
+success
+[root@nfss ~]# firewall-cmd --permanent --add-service="mountd"
+success
+[root@nfss ~]# firewall-cmd --reload
+success
+[root@nfss ~]# systemctl status firewalld
+● firewalld.service - firewalld - dynamic firewall daemon
+   Loaded: loaded (/usr/lib/systemd/system/firewalld.service; enabled; vendor preset: enabled)
+   Active: active (running) since Thu 2023-12-14 17:56:56 UTC; 2min 3s ago
+     Docs: man:firewalld(1)
+ Main PID: 3377 (firewalld)
+   CGroup: /system.slice/firewalld.service
+           └─3377 /usr/bin/python2 -Es /usr/sbin/firewalld --nofork --nopid
+
+Dec 14 17:56:55 nfss systemd[1]: Starting firewalld - dynamic firewall daemon...
+Dec 14 17:56:56 nfss systemd[1]: Started firewalld - dynamic firewall daemon.
+Dec 14 17:56:56 nfss firewalld[3377]: WARNING: AllowZoneDrifting is enabled. This is...ow.
+Dec 14 17:58:33 nfss firewalld[3377]: WARNING: AllowZoneDrifting is enabled. This is...ow.
+Hint: Some lines were ellipsized, use -l to show in full.
+[root@nfss ~]# sustemctl enable nfs --now
+bash: sustemctl: command not found
+[root@nfss ~]# systemctl enable nfs --now
+Created symlink from /etc/systemd/system/multi-user.target.wants/nfs-server.service to /usr/lib/systemd/system/nfs-server.service.
+[root@nfss ~]# ss -tnplu
+Netid  State      Recv-Q Send-Q Local Address:Port               Peer Address:Port              
+udp    UNCONN     0      0              *:930                        *:*                   users:(("rpcbind",pid=336,fd=7))
+udp    UNCONN     0      0              *:36847                      *:*                  
+udp    UNCONN     0      0      127.0.0.1:755                        *:*                   users:(("rpc.statd",pid=3544,fd=9))
+udp    UNCONN     0      0              *:2049                       *:*                  
+udp    UNCONN     0      0              *:50987                      *:*                   users:(("rpc.statd",pid=3544,fd=7))
+udp    UNCONN     0      0      127.0.0.1:323                        *:*                   users:(("chronyd",pid=385,fd=5))
+udp    UNCONN     0      0              *:68                         *:*                   users:(("dhclient",pid=2328,fd=6))
+udp    UNCONN     0      0              *:20048                      *:*                   users:(("rpc.mountd",pid=3545,fd=7))
+udp    UNCONN     0      0              *:111                        *:*                   users:(("rpcbind",pid=336,fd=6))
+udp    UNCONN     0      0           [::]:930                     [::]:*                   users:(("rpcbind",pid=336,fd=10))
+udp    UNCONN     0      0           [::]:41689                   [::]:*                   users:(("rpc.statd",pid=3544,fd=10))
+udp    UNCONN     0      0           [::]:2049                    [::]:*                  
+udp    UNCONN     0      0           [::]:59406                   [::]:*                  
+udp    UNCONN     0      0          [::1]:323                     [::]:*                   users:(("chronyd",pid=385,fd=6))
+udp    UNCONN     0      0           [::]:20048                   [::]:*                   users:(("rpc.mountd",pid=3545,fd=9))
+udp    UNCONN     0      0           [::]:111                     [::]:*                   users:(("rpcbind",pid=336,fd=9))
+tcp    LISTEN     0      128            *:22                         *:*                   users:(("sshd",pid=618,fd=3))
+tcp    LISTEN     0      100    127.0.0.1:25                         *:*                   users:(("master",pid=858,fd=13))
+tcp    LISTEN     0      64             *:2049                       *:*                  
+tcp    LISTEN     0      64             *:38252                      *:*                  
+tcp    LISTEN     0      128            *:111                        *:*                   users:(("rpcbind",pid=336,fd=8))
+tcp    LISTEN     0      128            *:20048                      *:*                   users:(("rpc.mountd",pid=3545,fd=8))
+tcp    LISTEN     0      128            *:51954                      *:*                   users:(("rpc.statd",pid=3544,fd=8))
+tcp    LISTEN     0      64          [::]:44693                   [::]:*                  
+tcp    LISTEN     0      128         [::]:22                      [::]:*                   users:(("sshd",pid=618,fd=4))
+tcp    LISTEN     0      100        [::1]:25                      [::]:*                   users:(("master",pid=858,fd=14))
+tcp    LISTEN     0      128         [::]:38015                   [::]:*                   users:(("rpc.statd",pid=3544,fd=11))
+tcp    LISTEN     0      64          [::]:2049                    [::]:*                  
+tcp    LISTEN     0      128         [::]:111                     [::]:*                   users:(("rpcbind",pid=336,fd=11))
+tcp    LISTEN     0      128         [::]:20048                   [::]:*                   users:(("rpc.mountd",pid=3545,fd=10))
+[root@nfss ~]# mkdir -p /srv/share/upload
+[root@nfss ~]# tree /srv
+bash: tree: command not found
+[root@nfss ~]# tree /srv/
+bash: tree: command not found
+[root@nfss ~]# yum tree
+Failed to set locale, defaulting to C
+Loaded plugins: fastestmirror
+No such command: tree. Please use /bin/yum --help
+[root@nfss ~]# yum install tree
+Failed to set locale, defaulting to C
+Loaded plugins: fastestmirror
+Loading mirror speeds from cached hostfile
+ * base: mirror.hostnet.nl
+ * extras: mirror.hostnet.nl
+ * updates: mirror.hostnet.nl
+Resolving Dependencies
+--> Running transaction check
+---> Package tree.x86_64 0:1.6.0-10.el7 will be installed
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+==========================================================================================
+ Package           Arch                Version                    Repository         Size
+==========================================================================================
+Installing:
+ tree              x86_64              1.6.0-10.el7               base               46 k
+
+Transaction Summary
+==========================================================================================
+Install  1 Package
+
+Total download size: 46 k
+Installed size: 87 k
+Is this ok [y/d/N]: y
+Downloading packages:
+tree-1.6.0-10.el7.x86_64.rpm                                       |  46 kB  00:00:00     
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+  Installing : tree-1.6.0-10.el7.x86_64                                               1/1 
+  Verifying  : tree-1.6.0-10.el7.x86_64                                               1/1 
+
+Installed:
+  tree.x86_64 0:1.6.0-10.el7                                                              
+
+Complete!
+[root@nfss ~]# tree /srv/
+/srv/
+└── share
+    └── upload
+
+2 directories, 0 files
+[root@nfss ~]# chown -R nfsnobody:nfsnobody /srv/share
+[root@nfss ~]# chmod 0777 /srv/share/upload
+[root@nfss ~]# exports -r
+bash: exports: command not found
+[root@nfss ~]# exportfs -r
+[root@nfss ~]# exportfs -s
+[root@nfss ~]# cat >>EOF> /etc/exports /srv/share 192.168.50.11/32(rw,sync,rooh)
+bash: syntax error near unexpected token `('
+[root@nfss ~]# cat >>EOF> /etc/exports /srv/share 192.168.50.11/32(rw,sync,root_
+bash: syntax error near unexpected token `newline'
+[root@nfss ~]# cat >>EOF> /etc/exports
+/srv/share 192.168.50.11/32(rw,sync,root_squash)       
+EOF
+
+EOF>
+^C
+[root@nfss ~]# cat /etc/exports
+/srv/share 192.168.50.11/32(rw,sync,root_squash)
+EOF
+
+EOF>
+[root@nfss ~]# vi /etc/exports
+[root@nfss ~]# exportfs -r
+[root@nfss ~]# exportfs -s
+/srv/share  192.168.50.11/32(sync,wdelay,hide,no_subtree_check,sec=sys,rw,secure,root_squash,no_all_squash)
+[root@nfss ~]# touch /srv/share/upload/file_server{1..3}
+[root@nfss ~]# exit
+exit
+
+
